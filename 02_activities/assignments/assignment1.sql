@@ -66,7 +66,8 @@ FROM product;
 add a column to the previous query called pepper_flag that outputs a 1 if the product_name 
 contains the word “pepper” (regardless of capitalization), and otherwise outputs 0. */
 SELECT product_id,product_name
-,CASE WHEN product_name LIKE '%pepper%' THEN 1
+,CASE WHEN product_name LIKE '%PEPPER%'  
+LIKE '%pepper%'THEN 1
 ELSE 0
 	  END as pepper_flag
 FROM product;
@@ -90,6 +91,10 @@ ORDER BY v.vendor_name, vba.market_date;
 -- AGGREGATE
 /* 1. Write a query that determines how many times each vendor has rented a booth 
 at the farmer’s market by counting the vendor booth assignments per vendor_id. */
+SELECT vendor_id,
+COUNT(vendor_id) as booth_rented
+from vendor_booth_assignments
+GROUP BY vendor_id;
 
 
 
@@ -98,6 +103,13 @@ sticker to everyone who has ever spent more than $2000 at the market. Write a qu
 of customers for them to give stickers to, sorted by last name, then first name. 
 
 HINT: This query requires you to join two tables, use an aggregate function, and use the HAVING keyword. */
+SELECT customer_last_name, customer_first_name,
+SUM(quantity * cost_to_customer_per_qty) as total_expenditure
+FROM customer_purchases cp
+INNER JOIN customer c
+ON cp.customer_id = c.customer_id
+GROUP BY customer_last_name
+HAVING total_expenditure > 2000;
 
 
 
@@ -112,7 +124,12 @@ When inserting the new vendor, you need to appropriately align the columns to be
 -> To insert the new row use VALUES, specifying the value you want for each column:
 VALUES(col1,col2,col3,col4,col5) 
 */
+DROP TABLE IF EXISTS temp.new_vendor;
+CREATE TABLE temp.new_vendor AS
+SELECT * FROM vendor;
 
+INSERT INTO temp.new_vendor(vendor_id, vendor_name, vendor_type, vendor_owner_first_name, vendor_owner_last_name)
+VALUES ('10','Thomass Superfood Store', 'a Fresh Focused store', 'Thomas', 'Rosenthal');
 
 
 -- Date
@@ -128,4 +145,5 @@ Remember that money spent is quantity*cost_to_customer_per_qty.
 
 HINTS: you will need to AGGREGATE, GROUP BY, and filter...
 but remember, STRFTIME returns a STRING for your WHERE statement!! */
+
 
